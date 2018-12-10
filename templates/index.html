@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        NBA 2017-18 Analysis
+    </title>
+  <style>
+    .interact_nav button{
+      height: 25px;
+    }
+    </style>
+  <script type="text/javascript">
+    window.onload = function(){
+      document.querySelector("#roll1").onclick = function(){
+        document.querySelector("#id1").scrollIntoView(false);
+      }
+      document.querySelector("#roll2").onclick = function(){
+        document.querySelector("#id2").scrollIntoView(true);
+      }
+    }
+  </script>
+
+</head>
+<body>
+  <h1 style="text-align : center"> NBA 2017-2018 Season Analysis </h1>
+
+  <h2 style="text-align : center"> SI507 final project, Yipeng Chen </h2>
+
+
+
+  <h3> Here are some notice of this project: </h3>
+  <ul>
+      <li>This data is for NBA 2017-1028 Season Analysis, we collect player info, player season info and team season info.</li>
+      <li>The data is recorded PER GAME instead of total.</li>
+      <li>Continues work need to be done here...</li>
+  </ul>
+  <form action="/rebuild_database" method="POST">
+    In this admin page, you can request for rebuild the database...
+    <input style="width:5vw; background-color:lightblue" type="submit" value="Rebuild"/>
+    </form>
+
+  <h3>Guidence of interative search</h3>
+  <ol class="interact_nav">
+      <li id="roll1">Search basic data for player/team data this season. Also in this section, you could Find top player/team in different areas, the table is sortable and you can select area to see the top 30 auto-generated graph.</li>
+      <li id="roll2">Compare player/team in multiple dimensions</li>
+  </ol>
+
+
+  <br><br><br>  
+  <!-- first part -->
+  <div id="id1">
+    <h3>Basic data for player/team data this season</h3>
+    <p>In this part, you can show some basic data for players and teams,there are filters for you to do that. <br><b>NOTE: For all tables, you can click on the column name to sort the table.</b><br><br>
+      "Team" is for team performance in NBA 2017-18 Season regular games<br>
+      "Player" is for players in NBA 2017-18 Season, and will show basic information of player<br>
+      "Player Season Data" is for players performance in NBA 2017-2018 Season regular games
+    </p>
+    <form action="/part1" method="POST">
+      <select style="width: 15vw; height: 2vw" name="part1_select">
+        Type of information
+          <option value="team">Team</option>
+          <option value="player">Player</option>
+          <option value="player_team">Player Season</option>
+      </select>
+      <input style="width: 5vw; background-color:lightblue" type="submit" value="Go"/>
+  </form>
+  </div>
+<br><br><br>
+
+  <div id="id2">
+    <h3>Basic data comparation for teams and players.</h3>
+    <p>In this section, you can select team or player to see the detail comparasion in two-demension with visualization.</p>
+    <form action="/part2" method="POST">
+      <select style="width: 15vw; height: 2vw" name="part2_select">
+        Type of information
+          <option value="team">Team</option>
+          <option value="player">Player</option>
+      </select>
+      <input style="width: 5vw; background-color:lightblue" type="submit" value="Go"/>
+  </form>
+  </div>

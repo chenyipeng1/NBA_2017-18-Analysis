@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        player
+    </title>  
+  <style>
+    .interact_nav button{
+      height: 25px;
+    }
+    table {
+         border-collapse: collapse;
+         width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {background-color: lightgray;}
+    </style>
+  
+  <script src="/static/jquery-3.3.1.min.js"></script>
+  <script src="/static/sorttable.js" type="text/javascript"></script>
+</head>
+<body>
+  <h1 style="text-align : center"> NBA 2017-2018 Season Analysis Player Basic</h1>
+
+  <h2 style="text-align : center"> SI507 final project, Yipeng Chen </h2>
+  <table class="sortable" style="width:60vw; margin-top: 1vw; margin-left: 20vw; margin-right: 20vw">
+    <tr>
+        <th >Id</th>
+        <th >Name</th>
+        <th >Position</th>
+        <th >Age</th>
+    </tr>
+  {% for i in entries %}
+    <tr>
+        {% for j in i%}
+            <th>{{j}}</th>
+        {% endfor %}
+    </tr>
+  {% endfor %}
+  </table>
+
+</body>

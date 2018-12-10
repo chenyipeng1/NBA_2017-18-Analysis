@@ -1,0 +1,50 @@
+/* yipeng for tooltip */
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 120px;					
+    height: 40px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+/* yipeng for line chart */
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+.area {
+    fill: lightsteelblue;
+}
+
+.zoom {
+cursor: move;
+fill: none;
+pointer-events: all;
+}
+
+/* yipeng for bar chart */
+
+  
+.bar1 {
+    fill: darkorange;
+}
+
+.bar2 {
+    fill: steelblue;
+}
+.axis text {
+    font: 10px sans-serif;
+}
+  
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}

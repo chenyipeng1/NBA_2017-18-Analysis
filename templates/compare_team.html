@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        compare_team
+    </title>
+<style>
+    .interact_nav button{
+      height: 25px;
+    }
+    table {
+         border-collapse: collapse;
+         width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {background-color: lightgray;}
+    </style>
+  <link rel="icon" href="https://getbootstrap.com/favicon.ico">
+  <script src="/static/jquery-3.3.1.min.js"></script>
+  <script src="/static/sorttable.js" type="text/javascript"></script>
+  <script src="/static/d3.v4.js" type="text/javascript"></script>
+  <script>
+        var data = {{ entries|tojson }};
+        console.log(data);
+        //now get entries
+        dict = {
+          "point" : 2,
+          "rebound": 3,
+          "assist" :4, 
+          "steal" : 5,
+          "block" : 6,
+          "turnover": 7,
+          "field goal": 8,
+          "field goal p": 9,
+          "3 field goal": 10,
+          "3 field goal p": 11
+        }
+    
+        function draw(key1, key2){
+          $("#draw").empty();
+          var value1 = 2;
+          var value2 = 3;
+
+          var re = [];
+          value1 = dict[key1];
+          value2 = dict[key2];
+          console.log("value1: ", value1, "value2: ", value2);
+          for (i in data){
+            re.push([data[i][value1],data[i][value2],data[i][1]]);
+          }
+          
+          console.log(re);
+
+          //draw 
+          o_width = parseInt($("#draw").attr("width"));
+          o_height = parseInt($("#draw").attr("height"));   
+    
+          var margin = { top: 40, right: 100, bottom: 50, left: 40 }, 
+              width = o_width - margin.left - margin.right,
+              height = o_height - margin.top - margin.bottom;
+
+          var svg = d3.select("#draw").append("svg") 
+                        .attr("width", width + margin.left + margin.right) 
+                        .attr("height", 100+ height + margin.top + margin.bottom) 
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            var x = d3.scaleLinear().range([0, width]);
+            var y = d3.scaleLinear().range([height, 0]);
+            x.domain([d3.min(re, function (d) { return d[0]; }), d3.max(re, function (d) { return d[0]; })]);
+            y.domain([d3.min(re, function (d) { return d[1]; }), d3.max(re, function (d) { return d[1]; })]);
+            var xAxis = d3.axisBottom(x),
+                yAxis = d3.axisLeft(y);          
+
+              svg.selectAll("circle")
+                .data(re)
+                .enter()
+                .append("circle") 
+                .attr('fill',"orange")
+                .attr("cx", function(d) {
+                    return x(d[0]);
+                    })
+                .attr("cy", function(d) {
+                    return y(d[1]);
+                    })
+                .attr("r", 5);   
+            
+                svg.selectAll("text")
+                .data(re)
+                .enter()
+                .append("text")
+                .text(function(d){
+                    console.log(d[2]);
+                    return d[2];
+                })
+                .style("font-size", "8px")
+                .attr("x", function (d) {
+                    return x(d[0])+8;
+                })
+                .attr("y", function (d) {
+                    return y(d[1])-5;
+                });
+
+            svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+            svg.append("text") 
+                .text(key1)
+                .style("font-size", "20px")
+                .attr("x", width + 5)
+                .attr("y", height + 5);
+            svg.append("text") 
+                .text(key2)
+                .style("font-size", "20px")
+                .attr("x", -margin.left)
+                .attr("y", -5);
+        }
+
+    
+        window.onload = function(){
+          $("#create_graph").on("click",function(){
+            key1 = $("#compare_team_selection_1").val();
+            key2 = $("#compare_team_selection_2").val();
+            draw(key1,key2);
+          })
+        }  
+    </script>  
+</head>
+<body>
+  <h1 style="text-align : center"> NBA 2017-2018 Season Analysis Team Compare</h1>
+
+  <h2 style="text-align : center"> SI507 final project, Yipeng Chen </h2>
+  <p> Select Areas to compare in 30 teams.</p>
+
+    <select style="width: 15vw; height: 2vw" id="compare_team_selection_1" >
+        Type of selection     
+          <option value="point">Point</option>
+          <option value="rebound">Rebound</option>
+          <option value="assist">Assist</option>
+          <option value="steal">Steal</option>
+          <option value="block">Block</option>
+          <option value="turnover">Turnover</option>
+          <option value="field goal">Field Goal</option>
+          <option value="field goal p">Field Goal %</option>
+          <option value="3 field goal">3 Field Goal</option>
+          <option value="3 field goal p">3 Field Goal %</option>
+        </select>
+
+    <select style="width: 15vw; height: 2vw" id="compare_team_selection_2" >
+            Type of selection (different from previous one)     
+                <option value="point">Point</option>
+                <option value="rebound">Rebound</option>
+                <option value="assist">Assist</option>
+                <option value="steal">Steal</option>
+                <option value="block">Block</option>
+                <option value="turnover">Turnover</option>
+                <option value="field goal">Field Goal</option>
+                <option value="field goal p">Field Goal %</option>
+                <option value="3 field goal">3 Field Goal</option>
+                <option value="3 field goal p">3 Field Goal %</option>
+            </select>
+    <button id="create_graph">GO</button>
+
+    <svg style="display:block" width="1200px" height="600px" id="draw"></svg>
+
+  <table class="sortable" style="margin-top: 1vw">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Points</th>
+        <th>Rebound</th>
+        <th>Assist</th>
+        <th>Steal</th>
+        <th>Block</th>
+        <th>Turnover</th>
+        <th>Field Goal</th>
+        <th>Field Goal %</th>
+        <th>3-Field Goal</th>
+        <th>3-Field Goal %</th>
+    </tr>
+  {% for i in entries %}
+    <tr>
+        {% for j in i%}
+            <th>{{j}}</th>
+        {% endfor %}
+    </tr>
+  {% endfor %}
+  </table>
+
+</body>
+
+

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        compare_player
+    </title>
+  <style>
+    .interact_nav button{
+      height: 25px;
+    }
+    table {
+         border-collapse: collapse;
+         width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {background-color: lightgray;}
+    div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 100px;					
+    height: 80px;					
+    padding: 2px;				
+    font: 12px sans-serif;	
+    background-color: aquamarine;	
+    border: 1px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+    </style>
+  <link rel="icon" href="https://getbootstrap.com/favicon.ico">
+  <script src="/static/jquery-3.3.1.min.js"></script>
+  <script src="/static/sorttable.js" type="text/javascript"></script>
+  <script src="/static/d3.v4.js" type="text/javascript"></script>
+  <script>
+        var data = {{ entries|tojson }};
+        console.log(data);
+        //now get entries
+        dict = {
+            "minute": 4,
+            "point" : 5,
+            "rebound": 6,
+            "assist" :7, 
+            "steal" : 8,
+            "block" : 9,
+            "turnover": 10,
+            "foul": 11,
+            "field goal": 11,
+            "field goal p":13,
+            "3 field goal": 14,
+            "3 field goal p": 15,
+            "effective goal p": 16,
+            "free throw goal": 17,
+            "free throw goal p": 18
+        }
+    
+        function draw(key1, key2){
+          $("#draw").empty();
+          var value1 = 2;
+          var value2 = 3;
+
+          var re = [];
+          value1 = dict[key1];
+          value2 = dict[key2];
+          console.log("value1: ", value1, "value2: ", value2);
+          for (i in data){
+            re.push([data[i][value1],data[i][value2],data[i][0]]);
+          }
+          
+          console.log(re);
+
+          //draw 
+          o_width = parseInt($("#draw").attr("width"));
+          o_height = parseInt($("#draw").attr("height"));   
+    
+          var margin = { top: 40, right: 100, bottom: 50, left: 40 }, 
+              width = o_width - margin.left - margin.right,
+              height = o_height - margin.top - margin.bottom;
+
+          var svg = d3.select("#draw").append("svg") 
+                        .attr("width", width + margin.left + margin.right) 
+                        .attr("height", 100+ height + margin.top + margin.bottom) 
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            var x = d3.scaleLinear().range([0, width]);
+            var y = d3.scaleLinear().range([height, 0]);
+            x.domain([d3.min(re, function (d) { return d[0]; }), d3.max(re, function (d) { return d[0]; })]);
+            y.domain([d3.min(re, function (d) { return d[1]; }), d3.max(re, function (d) { return d[1]; })]);
+            var xAxis = d3.axisBottom(x),
+                yAxis = d3.axisLeft(y);          
+                var div = d3.select("body").append("div")	
+                    .attr("class", "tooltip")				
+                    .style("opacity", 0);
+
+              svg.selectAll("circle")
+                .data(re)
+                .enter()
+                .append("circle") 
+                .attr('fill',"orange")
+                .attr("cx", function(d) {
+                    return x(d[0]);
+                    })
+                .attr("cy", function(d) {
+                    return y(d[1]);
+                    })
+                .attr("r", 5)
+                .on("mousemove", function(d) {	
+                    div.transition()		
+                        .duration(200)		
+                        .style("opacity", .9);		
+                    div	.html(d[2]+"<br>"+key1+": "+d[0]+"</br>"+key2+": "+d[1])	
+                        .style("left", (d3.event.pageX + 10) + "px")		
+                        .style("top", (d3.event.pageY - 50) + "px");	
+                    })			
+                .on("mouseout", function(d) {		
+                    div.transition()		
+                        .duration(500)		
+                        .style("opacity", 0);	
+                });
+            
+                // svg.selectAll("text")
+                // .data(re)
+                // .enter()
+                // .append("text")
+                // .text(function(d){
+                //     console.log(d[2]);
+                //     return d[2];
+                // })
+                // .style("font-size", "8px")
+                // .attr("x", function (d) {
+                //     return x(d[0])+8;
+                // })
+                // .attr("y", function (d) {
+                //     return y(d[1])-5;
+                // });
+
+            svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+            svg.append("text") 
+                .text(key1)
+                .style("font-size", "20px")
+                .attr("x", width + 5)
+                .attr("y", height + 5);
+            svg.append("text") 
+                .text(key2)
+                .style("font-size", "20px")
+                .attr("x", -margin.left)
+                .attr("y", -5);
+        }
+
+    
+        window.onload = function(){
+            $("")
+
+          $("#create_graph").on("click",function(){
+            key1 = $("#compare_player_selection_1").val();
+            key2 = $("#compare_player_selection_2").val();
+            draw(key1,key2);
+          })
+        }  
+    </script>  
+</head>
+<body>
+  <h1 style="text-align : center"> NBA 2017-2018 Season Analysis Team Compare</h1>
+
+  <h2 style="text-align : center"> SI507 final project, Yipeng Chen </h2>
+  <p> Select Areas to compare in 30 teams.</p>
+
+  <select style="width: 15vw; height: 2vw" id="compare_player_selection_1">
+        Type of selection
+          <option value="minute">Minute</option>
+          <option value="point">Point</option>
+          <option value="rebound">Rebound</option>
+          <option value="assist">Assist</option>
+          <option value="steal">Steal</option>
+          <option value="block">Block</option>
+          <option value="turnover">Turnover</option>
+          <option value="foul">Personal Foul</option>
+          <option value="field goal">Field Goal</option>
+          <option value="field goal p">Field Goal %</option>
+          <option value="3 field goal">3 Field Goal</option>
+          <option value="3 field goal p">3 Field Goal %</option>
+          <option value="effective goal p">Effective Field Goal %</option>
+          <option value="free throw goal">Free Throw Goal</option>
+          <option value="free throw goal p">Free Throw Goal p%</option>
+        </select>
+<select style="width: 15vw; height: 2vw" id="compare_player_selection_2">
+    Type of selection
+        <option value="minute">Minute</option>
+        <option value="point">Point</option>
+        <option value="rebound">Rebound</option>
+        <option value="assist">Assist</option>
+        <option value="steal">Steal</option>
+        <option value="block">Block</option>
+        <option value="turnover">Turnover</option>
+        <option value="foul">Personal Foul</option>
+        <option value="field goal">Field Goal</option>
+        <option value="field goal p">Field Goal %</option>
+        <option value="3 field goal">3 Field Goal</option>
+        <option value="3 field goal p">3 Field Goal %</option>
+        <option value="effective goal p">Effective Field Goal %</option>
+        <option value="free throw goal">Free Throw Goal</option>
+        <option value="free throw goal p">Free Throw Goal p%</option>
+    </select>
+    <button id="create_graph">GO</button>
+
+    <svg style="display:block" width="1200px" height="600px" id="draw"></svg>
+
+    <table class="sortable" style="margin-top: 1vw; width: 100vw">
+            <tr>
+                <th >Name</th>
+                <th>Team Name</th>
+                <th>Game</th>
+                <th>Line Up</th>
+                <th>Minute</th>
+                <th>Point</th>
+                <th>Rebound</th>
+                <th>Assist</th>
+                <th>Steal</th>
+                <th>Block</th>
+                <th>Turnover</th>
+                <th>Personal Foul</th>
+                <th>Field Goal</th>
+                <th>Field Goal %</th>
+                <th>3-Field Goal</th>
+                <th>3-Field Goal %</th>
+                <th>Effective Field Goal %</th>
+                <th>Free Throw Goal </th>
+                <th>Free Throw %</th>
+            </tr>
+          {% for i in entries %}
+            <tr>
+                {% for j in i%}
+                    <th>{{j}}</th>
+                {% endfor %}
+            </tr>
+          {% endfor %}
+          </table>
+
+</body>
